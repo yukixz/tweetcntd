@@ -7,6 +7,9 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'tweetcntd.views.home.main', name='home'),
+    url(r'^auth/(\w+)$', 'tweetcntd.views.auth.main'),
+    url(r'^backend/(\w+)$', 'tweetcntd.views.backend.main'),
+    
     url(r'^hello/$', 'tweetcntd.views.hello.main'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
