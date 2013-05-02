@@ -1,49 +1,53 @@
-from hmac import new as hmac
-from base64 import b64encode as base64
-import urllib.parse
-import hashlib, random, time
+from cgi import parse_qs
+from requests_oauthlib import OAuth1
+import requests
 
-class OAuthClient():
-	def __init__(self, consumer_key, consumer_secret, request_url, access_url, callback_url=None):
+class TwitterClient():
+	def __init__(self, consumer_key, consumer_secret, callback_url=None, access_key=None, access_secret=None):
 		''' Constructor '''
-		self.consumer_key = consumer_key
-		self.consumer_secret = consumer_secret
-		self.request_url = request_url
-		self.access_url = access_url
-		self.callback_url = callback_url
+		self.oauth = OAuth1(
+		client_key = consumer_key,
+		client_secret = consumer_secret,
+		callback_uri = callback_url,
+		resource_owner_key = access_key,
+		resource_owner_secret = access_secret
+		)
 	
-	def quote(text):
-		return urllib.parse.quote(text, '')
+	def get(url):
+		r = requests.get(url=url, auth=self.oauth)
+		if r.status_code==200: return r
+		else:
+			raise
 	
-	def normalize_params(self, params):
-		return '&'.join([ '%s=%s' % (self.quote(k), self.quote(params[k])) for k in sorted(params) ])
+	def post(url, data):
+		r = requests.get(url=url, data=data, auth=self.oauth)
+		if r.status_code==200: return r
+		else:
+			raise
 	
-	def form_signed_params(self, url, method, token="", secret="", addition_params={}):
-		''' Form Signed Params
+	def get_authorize_url(self):
+		request_url = "https://api.twitter.com/oauth/request_token"
+		authorize_url = "https://api.twitter.com/oauth/authorize"
+		r = self.get(request_url)
+		
+		token = parse_qs(r.text)['oauth_token'][0]
+		authorize_url += "?oauth_token=%s" % token
+	
+	def load_usrtl(self, since_id, count=200):
+		''' Load User Timeline 
+		response will contain one tweet at least( since_id ).
 		'''
-		
-		# Create a params.
-		params = {
-			"oauth_consumer_key": self.consumer_key,
-			"oauth_signature_method": "HMAC-SHA1",
-			"oauth_timestamp": str(int(time.time())),
-			"oauth_nonce": str(random.getrandbits(64)),
-			"oauth_version": "1.0"
-		}
-		params.update(additional_params)
-		
-		if token:	params["oauth_token"] = token
-		else 		params["oauth_callback"] = self.callback_url
-		
-		# Create a message of the params.
-		params_str = self.normalize_params(params)
-		message = ('&'.join([ self.quote(method), self.quote(url), self.quote(params_str) ])).encode('utf-8')
-		
-		# Create a HMAC-SHA1 signature of the message.
-		key = ('%s&%s' % (self.consumer_secret, secret)).encode('utf-8')
-		signature = hmac(key, message, hashlib.sha1)
-		params["oauth_signature"] = base64(signature.digest()).strip()
-		
-		return self.normalize_params(params)
+		url = "https://api.twitter.com/1.1/statuses/user_timeline.json"
+		url += "?trim_user=1"
+		url += "&since_id=%s" % since_id  if since_id else ''
+		url += "&max_id=%s" % max_id  if max_id else ''
+		url += "&count=%s" % count  if count>0 else ''
+		r = self.get(url)
 	
+	def tweet(self, status):
+		''' Post Tweet
+		'''
+		url = "https://api.twitter.com/1.1/statuses/update.json"
+		data = {'status':  status}
+		r = self.post(url, data)
 	
