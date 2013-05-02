@@ -1,8 +1,11 @@
 # tweetcntd
 
-## Environment
+## Dependencies
 * python3
-* Django
+* - Django
+* - requests
+* - oauthlib
+* - requests-oauthlib
 * MySQL
 
 ## GAE Version
