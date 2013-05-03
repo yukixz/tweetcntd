@@ -12,6 +12,6 @@ REDIRECT = '''\
 AUTH_SUCCESS = '''\
 <HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">
 <TITLE>Success</TITLE></HEAD><BODY>
-<P>You have authorize this app. <br/>Your screen name: {{screen_name}}</P>
+<P>You have authorized this app. <br/>Your screen name: {{screen_name}}</P>
 </BODY></HTML>
 '''
