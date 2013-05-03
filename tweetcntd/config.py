@@ -3,6 +3,7 @@ VERSION = 'ver 0.0.1'
 CONSUMER_KEY = 'CjUSfZ1IDHrBe9dLu5Viyw'
 CONSUMER_SECRET = '3iUPswMl97gxxirCK5rVN3MvNqM5AcB1dTnxlmdMyQ'
 
+HOST = 'http://127.0.0.1:8000'
 AUTH_KEY = '0x0'
 TWEET_MIN = 8
 
