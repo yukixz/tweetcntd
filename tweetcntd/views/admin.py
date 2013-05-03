@@ -1,5 +1,5 @@
 
-from tweetcntd.models import config
+from tweetcntd import config
 
 def list(request):
 	pass

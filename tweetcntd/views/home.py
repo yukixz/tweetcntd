@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from tweetcntd.models import config
+from tweetcntd import config
 
 HOME = '''
 <html>
