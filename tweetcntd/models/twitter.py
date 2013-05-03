@@ -9,12 +9,12 @@ class RequestError(Exception):
 
 class TwitterClient():
 	@staticmethod
-	def OAuth(consumer_key, consumer_secret, access_key=None, access_secret=None, callback_url=None):
+	def OAuth(consumer_key, consumer_secret, access_token=None, access_secret=None, callback_url=None):
 		''' Construct a OAuth Object '''
 		return OAuth1(
 		client_key = consumer_key,
 		client_secret = consumer_secret,
-		resource_owner_key = access_key,
+		resource_owner_key = access_token,
 		resource_owner_secret = access_secret,
 		callback_uri = callback_url
 		)
@@ -27,7 +27,7 @@ class TwitterClient():
 			raise RequestError(r)
 	
 	def post(self, oauth, url, data):
-		r = requests.get(url=url, data=data, auth=oauth)
+		r = requests.post(url=url, data=data, auth=oauth)
 		if r.status_code==200: return r
 		else:
 			raise RequestError(r)
@@ -46,9 +46,10 @@ class TwitterClient():
 		access_url = "https://api.twitter.com/oauth/access_token"
 		oauth.client.resource_owner_key = token
 		data = {'oauth_verifier': verifier}
-		r = self.post(oauth, access_url, data) 
+		r = self.post(oauth, access_url, data)
+		
 		result = parse_qs(r.text)
-		return result["user_id"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
+		return result["user_id"][0], result["screen_name"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
 	
 	
 	def load_usrtl(self, oauth, since_id, count=200):
