@@ -1,7 +1,7 @@
 ''' Application
  No need to edit.
 '''
-VERSION = 'ver 0.0.1'
+VERSION = '0.0.1'
 CONSUMER_KEY = 'CjUSfZ1IDHrBe9dLu5Viyw'
 CONSUMER_SECRET = '3iUPswMl97gxxirCK5rVN3MvNqM5AcB1dTnxlmdMyQ'
 
