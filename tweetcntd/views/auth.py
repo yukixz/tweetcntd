@@ -12,7 +12,7 @@ def authorize(request):
 	response = HttpResponse()
 	response.status_code = 302
 	response['Location'] = url
-	response.content = Templates.REDIRECT.replace("{{url}}", url)
+	response.content = Templates.HTML_REDIRECT.replace("{{url}}", url)
 	return response
 
 def verify(request):
@@ -29,12 +29,12 @@ def verify(request):
 	response = HttpResponse()
 	response.status_code = 302
 	response['Location'] = url
-	response.content = Templates.REDIRECT.replace("{{url}}", url)
+	response.content = Templates.HTML_REDIRECT.replace("{{url}}", url)
 	return response
 
 def success(request):
 	response = HttpResponse()
-	response.content = Templates.AUTH_SUCCESS.replace("{{screen_name}}", request.GET['name'])
+	response.content = Templates.HTML_AUTH_SUCCESS.replace("{{screen_name}}", request.GET['name'])
 	return response
 
 
