@@ -49,7 +49,7 @@ class TwitterClient():
 		r = self.post(oauth, access_url, data)
 		
 		result = parse_qs(r.text)
-		return result["user_id"][0], result["screen_name"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
+		return int(result["user_id"][0]), result["screen_name"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
 	
 	
 	def load_usrtl(self, oauth, since_id, count=200):
