@@ -6,6 +6,13 @@ from tweetcntd.models.twitter import TwitterClient
 from tweetcntd.views import Templates
 
 def authorize(request):
+	if request.GET["key"] != config.AUTH_KEY:
+		response = HttpResponse()
+		response.status_code = 302
+		response['Location'] = config.HOST
+		response.content = Templates.HTML_REDIRECT.replace("{{url}}", url)
+		return response
+	
 	client = TwitterClient()
 	oauth = TwitterClient.OAuth(config.CONSUMER_KEY, config.CONSUMER_SECRET,
 			callback_url="%s/auth/verify" % config.HOST)
