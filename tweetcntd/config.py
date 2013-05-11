@@ -11,6 +11,8 @@ CONSUMER_SECRET = '3iUPswMl97gxxirCK5rVN3MvNqM5AcB1dTnxlmdMyQ'
 HOST = 'http://127.0.0.1:8000'
 AUTH_KEY = '0x0'
 TWEET_MIN = 8
+TIMEZONE = 8
+POST_TIME = '23:30'	# Hour:Minte. Local time
 
 ''' Databse
  (....)

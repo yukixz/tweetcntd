@@ -52,17 +52,18 @@ class TwitterClient():
 		return int(result["user_id"][0]), result["screen_name"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
 	
 	
-	def load_usrtl(self, oauth, since_id, count=200):
-		''' Load User Timeline 
-		response will contain one tweet at least( since_id ).
+	def load_usrtl(self, oauth, max_id=0, count=200):
+		''' Load User Timeline
+		return a loaded json object.
 		'''
 		url = "https://api.twitter.com/1.1/statuses/user_timeline.json?trim_user=1"
-		url += "&since_id=%s" % since_id  if since_id else ''
-		url += "&max_id=%s" % max_id  if max_id else ''
-		url += "&count=%s" % count  if count>0 else ''
+		# url += '&since_id=%s' % since_id  if since_id else ''
+		url += '&max_id=%d' % max_id  if max_id>0 else ''
+		url += '&count=%d' % count  if count>0 else ''
 		r = self.get(oauth, url)
+		return r.json()
 	
-	def tweet(self, status):
+	def tweet(self, oauth, status):
 		''' Post Tweet
 		'''
 		url = "https://api.twitter.com/1.1/statuses/update.json"

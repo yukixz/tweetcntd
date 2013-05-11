@@ -51,17 +51,17 @@ class Database():
 		self._execute(SQL_DELETE_USER)
 	
 	def insert_user(self, id, name, token, secret):
-		SQL_INSERT_USER = '''INSERT INTO %s (id, name, token, secret, t_sum, t_re, t_rt, t_rto, t_last) \
+		SQL_INSERT_USER = '''INSERT INTO %s (id, token, secret, name, t_sum, t_re, t_rt, t_rto, t_last) \
 			VALUES (%d, "%s", "%s", "%s", 0, 0, 0, 0, 0)''' % \
-			(self.TABLE, id, name, token, secret)
+			(self.TABLE, id, token, secret, name)
 		self._execute(SQL_INSERT_USER)
 	
 	def query_all(self):
 		SQL_QUERY_ALL = '''SELECT * FROM %s''' % (self.TABLE)
 		self._execute(SQL_QUERY_ALL)
 		li = []
-		for o in cur:
-			li.append(o)
+		for o in self.cur:
+			li.append(User(o[0], o[1], o[2], o[3], o[4], o[5], o[6], o[7], o[8]))
 		return li
 	
 	def update_count(self, id, sum, re, rt, rto, last):
@@ -74,4 +74,17 @@ class Database():
 		SQL_UPDATE_NAME = '''UPDATE %s SET name="%s" WHERE id=%d''' % \
 			(self.TABLE, name, id)
 		self._execute(SQL_UPDATE_NAME)
+	
+
+class User():
+	def __init__(self, id, token, secret, name, sum, re, rt, rto, last):
+		self.id = id
+		self.token = token
+		self.secret = secret
+		self.name = name
+		self.sum = sum
+		self.re = re
+		self.rt = rt
+		self.rto = rto
+		self.last = last
 	
