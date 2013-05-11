@@ -1,7 +1,8 @@
 from tweetcntd import config
 
+
 '''
- Templates: HTML
+ Template: HTML
 '''
 
 HTML_AUTH_SUCCESS = '''\
@@ -26,36 +27,8 @@ HTML_REDIRECT = '''\
 <A HREF="{{url}}">Click here to continue.</A>
 </BODY></HTML>'''
 
+
 '''
- Templates: SQL
+ Template: TWITTER
 '''
-
-# CREATE
-SQL_CREATE_TABLE = '''CREATE TABLE {{table}} \
-(id BIGINT Unsigned NOT NULL, token CHAR(50) NOT NULL, secret CHAR(41) NOT NULL,\
- name CHAR(15),\
- t_sum INT Unsigned, t_re INT Unsigned, t_rt INT Unsigned, t_rto INT Unsigned,\
- t_last BIGINT Unsigned,\
- PRIMARY KEY (id) )'''\
-.replace('{{table}}', config.DATABASE_TABLE)
-
-# DELETE
-SQL_DELETE_USER = '''DELETE FROM {{table}} WHERE id={{id}}'''\
-.replace('{{table}}', config.DATABASE_TABLE)
-
-# INSERT
-SQL_INSERT_USER = '''INSERT INTO {{table}} \
-(id, name, token, secret, t_sum, t_re, t_rt, t_rto, t_last) \
-VALUES ({{id}}, "{{name}}", "{{token}}", "{{secret}}", 0, 0, 0, 0, 0)'''\
-.replace('{{table}}', config.DATABASE_TABLE)
-
-# QUERY
-SQL_QUERY_ALL = '''SELECT * FROM {{table}}'''\
-.replace('{{table}}', config.DATABASE_TABLE)
-
-# UPDATE
-SQL_UPDATE_COUNT = '''UPDATE {{table}} SET t_sum={{sum}}, t_re={{re}}, t_rt={{rt}}, t_rto={{rto}, t_last={{last}} WHERE id={{id}}'''\
-.replace('{{table}}', config.DATABASE_TABLE)
-
-SQL_UPDATE_NAME = '''UPDATE {{table}} SET name={{name}} WHERE id={{id}}'''\
-.replace('{{table}}', config.DATABASE_TABLE)
+TWITTER_TWEET = u"@tweetcntd @{{name}} 本日共发 %d 推，其中 @ %d 推（%.1f%%）、RT @ %d 推（%.1f%%）、Retweet %d 推（%.1f%%）"
