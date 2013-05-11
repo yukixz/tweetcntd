@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, patterns, url
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -6,12 +6,10 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'tweetcntd.views.home.main', name='home'),
-    url(r'^auth/(\w+)$', 'tweetcntd.views.auth.main'),
-    url(r'^admin/(\w+)$', 'tweetcntd.views.admin.main'),
-    url(r'^backend/(\w+)$', 'tweetcntd.views.backend.main'),
-    
-    url(r'^hello/$', 'tweetcntd.views.hello.main'),
+    url(r'^$', include('tweetcntd.views.home')),
+    url(r'^auth/', include('tweetcntd.views.auth')),
+    url(r'^admin/', include('tweetcntd.views.admin')),
+    # url(r'^backend/', include('tweetcntd.views.backend')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

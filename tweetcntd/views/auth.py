@@ -1,3 +1,4 @@
+from django.conf.urls import patterns, url
 from django.http import HttpResponse
 from tweetcntd import config
 from tweetcntd.views import Templates
@@ -38,10 +39,8 @@ def success(request):
 	return response
 
 
-def main(request, mode):
-	if mode=='authorize':
-		return authorize(request)
-	elif mode=='verify':
-		return verify(request)
-	elif mode=='success':
-		return success(request)
+urlpatterns = patterns('tweetcntd.views',
+    url(r'^authorize/$', 'auth.authorize'),
+    url(r'^verify/$', 'auth.verify'),
+    url(r'^success/$', 'auth.success'),
+)
