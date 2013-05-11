@@ -3,10 +3,11 @@
 ## Dependencies
 * python3
 * - Django
-* - requests
+* - mysql-connector-python
 * - oauthlib
+* - requests
 * - requests-oauthlib
-* MySQL
+* MySQL/MariaDB
 
 ## GAE Version
 See this: https://github.com/dazzyd/tweetcntd-gae
