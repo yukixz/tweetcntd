@@ -9,7 +9,6 @@ urlpatterns = patterns('',
     url(r'^$', include('tweetcntd.views.home')),
     url(r'^auth/', include('tweetcntd.views.auth')),
     url(r'^admin/', include('tweetcntd.views.admin')),
-    # url(r'^backend/', include('tweetcntd.views.backend')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
