@@ -6,11 +6,11 @@ from tweetcntd.models.twitter import TwitterClient
 from tweetcntd.views import Templates
 
 def authorize(request):
-	if request.GET["key"] != config.AUTH_KEY:
+	if request.GET.get('key') != config.AUTH_KEY:
 		response = HttpResponse()
 		response.status_code = 302
 		response['Location'] = config.HOST
-		response.content = Templates.HTML_REDIRECT.replace("{{url}}", url)
+		response.content = Templates.HTML_REDIRECT.replace("{{url}}", config.HOST)
 		return response
 	
 	client = TwitterClient()
