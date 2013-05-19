@@ -1,6 +1,8 @@
 from tweetcntd import config
 
 
+VERSION = '0.0.1'
+
 '''
  Template: HTML
 '''
@@ -18,7 +20,7 @@ HTML_HOME ='''\
 <p>See source <a href="https://github.com/dazzyd/tweetcntd">here</a>.</p>
 <p><i>统计时段：-0:30~23:30、推数 {{tweet_min}} 以下不发统计<br/></i></p>
 </body></html>'''\
-.replace("{{version}}", config.VERSION)\
+.replace("{{version}}", VERSION)\
 .replace("{{tweet_min}}", str(config.TWEET_MIN))
 
 HTML_REDIRECT = '''\
@@ -31,4 +33,4 @@ HTML_REDIRECT = '''\
 '''
  Template: TWITTER
 '''
-TWITTER_TWEET = u"@tweetcntd @{{name}} 本日共发 %d 推，其中 @ %d 推（%.1f%%）、RT @ %d 推（%.1f%%）、Retweet %d 推（%.1f%%）"
+TWITTER_TWEET = "@tweetcntd @{{name}} 本日共发 %d 推，其中 @ %d 推（%.1f%%）、RT @ %d 推（%.1f%%）、Retweet %d 推（%.1f%%）"
