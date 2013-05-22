@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from tweetcntd import config
 from tweetcntd.models.database import Database
 from tweetcntd.models.twitter import TwitterClient
+from tweetcntd.models.twitter import TwitterUser
 from tweetcntd.views import Templates
 
 def authorize(request):
@@ -13,10 +14,9 @@ def authorize(request):
 		response.content = Templates.HTML_REDIRECT.replace("{{url}}", config.HOST)
 		return response
 	
-	client = TwitterClient()
-	oauth = TwitterClient.OAuth(config.CONSUMER_KEY, config.CONSUMER_SECRET,
-			callback_url="%s/auth/verify" % config.HOST)
-	url = client.get_authorize_url(oauth)
+	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
+				callback_url="%s/auth/verify" % config.HOST)
+	url = client.get_authorize_url()
 	
 	response = HttpResponse()
 	response.status_code = 302
@@ -29,9 +29,8 @@ def verify(request):
 	auth_verifier = request.GET["oauth_verifier"]
 	
 	# Request Access Token & Secret
-	client = TwitterClient()
-	oauth = TwitterClient.OAuth(config.CONSUMER_KEY, config.CONSUMER_SECRET,)
-	user_id, screen_name, access_token, access_secret = client.get_access_token(oauth, auth_token, auth_verifier)
+	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
+	user_id, screen_name, access_token, access_secret = client.get_access_token(auth_token, auth_verifier)
 	
 	# Save to Database
 	database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
