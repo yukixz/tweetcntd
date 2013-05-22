@@ -1,58 +1,40 @@
 from cgi import parse_qs
-from requests_oauthlib import OAuth1
-import requests
+from tweetcntd.models.oauth import OAuthClient
 
-class RequestError(Exception):
-	def __init__(self, r):
-		self.request = r
+class TwitterUser():
+	def __init__(self, token, secret):
+		self.access_token = token
+		self.access_secret = secret
 	
 
 class TwitterClient():
-	@staticmethod
-	def OAuth(consumer_key, consumer_secret, access_token=None, access_secret=None, callback_url=None):
-		''' Construct a OAuth Object '''
-		return OAuth1(
-		client_key = consumer_key,
-		client_secret = consumer_secret,
-		resource_owner_key = access_token,
-		resource_owner_secret = access_secret,
-		callback_uri = callback_url
+	def __init__(self, consumer_key, consumer_secret, callback_url=''):
+		self.client = OAuthClient(
+			consumer_key = consumer_key,
+			consumer_secret = consumer_secret,
+			callback_url = callback_url
 		)
 	
 	
-	def get(self, oauth, url):
-		r = requests.get(url=url, auth=oauth)
-		if r.status_code==200: return r
-		else:
-			raise RequestError(r)
-	
-	def post(self, oauth, url, data):
-		r = requests.post(url=url, data=data, auth=oauth)
-		if r.status_code==200: return r
-		else:
-			raise RequestError(r)
-	
-	
-	def get_authorize_url(self, oauth):
+	def get_authorize_url(self):
 		request_url = "https://api.twitter.com/oauth/request_token"
 		authorize_url = "https://api.twitter.com/oauth/authorize"
-		r = self.get(oauth, request_url)
+		r = self.client.get(request_url)
 		
 		token = parse_qs(r.text)['oauth_token'][0]
 		authorize_url += "?oauth_token=%s" % token
 		return authorize_url
 	
-	def get_access_token(self, oauth, token, verifier):
+	def get_access_token(self, token, verifier):
 		access_url = "https://api.twitter.com/oauth/access_token"
-		oauth.client.resource_owner_key = token
-		data = {'oauth_verifier': verifier}
-		r = self.post(oauth, access_url, data)
+		params = {'oauth_verifier': verifier}
+		r = self.client.post(access_url, params, token=token)
 		
 		result = parse_qs(r.text)
 		return int(result["user_id"][0]), result["screen_name"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
 	
 	
-	def load_usrtl(self, oauth, max_id=0, count=200):
+	def load_usrtl(self, user, max_id=0, count=200):
 		''' Load User Timeline
 		return a loaded json object.
 		'''
@@ -60,13 +42,15 @@ class TwitterClient():
 		# url += '&since_id=%s' % since_id  if since_id else ''
 		url += '&max_id=%d' % max_id  if max_id>0 else ''
 		url += '&count=%d' % count  if count>0 else ''
-		r = self.get(oauth, url)
+		r = self.client.get(url,
+					user.access_token, user.access_secret)
 		return r.json()
 	
-	def tweet(self, oauth, status):
+	def tweet(self, user, status):
 		''' Post Tweet
 		'''
 		url = "https://api.twitter.com/1.1/statuses/update.json"
-		data = {'status':  status}
-		r = self.post(oauth, url, data)
+		params = {'status':  status}
+		r = self.client.post(url, params,
+					user.access_token, user.access_secret)
 	
