@@ -35,22 +35,19 @@ class TwitterClient():
 	
 	
 	def load_usrtl(self, user, max_id=0, count=200):
-		''' Load User Timeline
-		return a loaded json object.
-		'''
-		url = "https://api.twitter.com/1.1/statuses/user_timeline.json?trim_user=1"
-		# url += '&since_id=%s' % since_id  if since_id else ''
-		url += '&max_id=%d' % max_id  if max_id>0 else ''
-		url += '&count=%d' % count  if count>0 else ''
-		r = self.client.get(url,
-					user.access_token, user.access_secret)
+		url = "https://api.twitter.com/1.1/statuses/user_timeline.json"
+		params = {'trim_user':1}
+		# if since_id: params['since_id'] = since_id
+		if max_id>0: params['max_id'] = max_id
+		if count>0: params['count'] = count
+		r = self.client.get(url, params,
+					token=user.access_token, secret=user.access_secret)
 		return r.json()
 	
 	def tweet(self, user, status):
-		''' Post Tweet
-		'''
 		url = "https://api.twitter.com/1.1/statuses/update.json"
 		params = {'status':  status}
 		r = self.client.post(url, params,
-					user.access_token, user.access_secret)
+					token=user.access_token, secret=user.access_secret)
+		# return r.json()
 	

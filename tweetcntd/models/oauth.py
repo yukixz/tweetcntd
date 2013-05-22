@@ -18,7 +18,7 @@ class OAuthClient():
 	
 	#@private_method:
 	def _quote(self, text):
-		return urllib.parse.quote(text, '')
+		return urllib.parse.quote(str(text), '')
 	
 	def _normalize_parameters(self, params):
 		return '&'.join([ '%s=%s' % (self._quote(k), self._quote(params[k])) for k in sorted(params) ])
@@ -49,13 +49,13 @@ class OAuthClient():
 		return params
 	
 	#@public_method:
-	def get(self, url, token='', secret=''):
-		params = self._form_signed_params('GET', url, token, secret)
+	def get (self, url, params={}, token='', secret=''):
+		params = self._form_signed_params('GET', url, token, secret, params)
 		r = requests.get(url=url, headers=self.oauth_headers, params=params)
 		if r.status_code==200: return r
 		else: raise RequestError(r)
 	
-	def post(self, url, params, token='', secret=''):
+	def post(self, url, params={}, token='', secret=''):
 		params = self._form_signed_params('POST', url, token, secret, params)
 		r = requests.post(url=url, headers=self.oauth_headers, params=params)
 		if r.status_code==200: return r
