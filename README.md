@@ -4,9 +4,7 @@
 * python3
 * - Django
 * - mysql-connector-python
-* - oauthlib
 * - requests
-* - requests-oauthlib
 * MySQL/MariaDB
 
 ## How to Deploy
