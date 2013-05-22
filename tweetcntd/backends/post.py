@@ -1,34 +1,34 @@
 #!/usr/bin/env python3
-import sys, os
-sys.path.append( os.path.join(os.path.dirname(__file__), "../..") )
+import sys
+sys.path.append(sys.argv[1])
 
 from datetime import datetime, timedelta
 import re
 from tweetcntd import config
 from tweetcntd.models.database import Database
 from tweetcntd.models.twitter import TwitterClient
+from tweetcntd.models.twitter import TwitterUser
 from tweetcntd.views import Templates
 
 def post():
 	database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
 		config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
 		config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
-	client = TwitterClient()
+	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
 	
 	start_time, end_time = get_time()
 	li = database.query_all()
 	for user in li:
-		oauth = oauth = TwitterClient.OAuth(config.CONSUMER_KEY, config.CONSUMER_SECRET,
-			access_token=user.token, access_secret=user.secret)
-		(sum, re, rt, rto) = count_user(client, oauth, start_time, end_time)
+		oauth_user = TwitterUser(user.token, user.secret)
+		(sum, re, rt, rto) = count_user(client, oauth_user, start_time, end_time)
 		if sum>config.TWEET_MIN and sum>0:
 			status = Templates.TWITTER_TWEET.replace('{{name}}', user.name) % \
 				( sum, re, float(re)/sum*100 , rt, float(rt)/sum*100, rto, float(rto)/sum*100 )
-			client.tweet(oauth, status)
+			client.tweet(oauth_user, status)
 	
 	database.close()
 
-def count_user(client, oauth, start_time, end_time,
+def count_user(client, user, start_time, end_time,
 		PATTERN_RE=re.compile(r'^(@\w+)\b.*$'), PATTERN_RT=re.compile(r'^.*?(RT ?@\w+)\b.*$')):
 	# init
 	max_id = 0
@@ -37,7 +37,7 @@ def count_user(client, oauth, start_time, end_time,
 	
 	# Generate user's new tweets' blocks
 	while format_time(block[len(block)-1]["created_at"]) > start_time:
-		block = client.load_usrtl(oauth, max_id)
+		block = client.load_usrtl(user, max_id)
 		timeline.extend(block)
 		max_id = block[len(block)-1]["id"]
 	
