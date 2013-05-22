@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
-sys.path.append(sys.argv[1])
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from datetime import datetime, timedelta
 import re
