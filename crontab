@@ -1,1 +1,1 @@
-30 23 * * * /path/to/backends-post.bash
+30 23 * * * /path/to/backends-post
