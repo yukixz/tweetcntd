@@ -9,19 +9,22 @@
 
 ## How to Deploy
 1. MySQL
-```sql
-CREATE DATABASE {{database_name_setted_in_config.py}
+```
+    CREATE DATABASE {{database_name_setted_in_config.py}}
+    # Execute SQL_CREATE_TABLE in tweetcntd.models.database.
 ```
 
 2. Crontab
+```bash
+    $ crontab -e
+```
 See `crontab` file.
 
-3. init.py
+3. Use 'uwsgi':
 ```bash
-$ tweetcntd/backend/init.py
+$ uwsgi -x uwsgi.xml -d /path/to/logfile
 ```
-
-4. Use 'nginx + uwsgi' or run with django:
+Or run with django:
 ```bash
 $ python3 manager runserver
 ```
