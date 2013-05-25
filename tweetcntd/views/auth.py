@@ -15,7 +15,7 @@ def authorize(request):
 		return response
 	
 	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
-				callback_url="%s/auth/verify" % config.HOST)
+				callback_url="%s/auth/verify/" % config.HOST)
 	url = client.get_authorize_url()
 	
 	response = HttpResponse()
@@ -40,7 +40,7 @@ def verify(request):
 	database.close()
 	
 	# Redirect to success page.
-	url = "%s/auth/success?name=%s" % (config.HOST, screen_name)
+	url = "%s/auth/success/?name=%s" % (config.HOST, screen_name)
 	response = HttpResponse()
 	response.status_code = 302
 	response['Location'] = url
