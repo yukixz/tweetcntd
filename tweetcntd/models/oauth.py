@@ -23,17 +23,18 @@ class OAuthClient():
 	def _normalize_parameters(self, params):
 		return '&'.join([ '%s=%s' % (self._quote(k), self._quote(params[k])) for k in sorted(params) ])
 	
-	def _form_signed_params(self, method, url, token='', secret='', params={}):
+	def _form_signed_params(self, method, url, token='', secret='', additional_params={}):
 		''' Form Signed Params
 		'''
 		# Add OAuth parameters.
-		params.update({
+		params = {
 			'oauth_consumer_key': self.consumer_key,
 			'oauth_signature_method': 'HMAC-SHA1',
 			'oauth_timestamp': str(int(time.time())),
 			'oauth_nonce': str(random.getrandbits(64)),
 			'oauth_version': '1.0'
-		})
+		}
+		params.update(additional_params)
 		if token:	params['oauth_token'] = token
 		else: 		params['oauth_callback'] = self.callback_url
 		
