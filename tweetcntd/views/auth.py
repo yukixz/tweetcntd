@@ -8,8 +8,7 @@ from tweetcntd.views import Templates
 
 def authorize(request):
 	if request.GET.get('key') != config.AUTH_KEY:
-		response = HttpResponse()
-		response.status_code = 302
+		response = HttpResponse(status=302)\
 		response['Location'] = config.HOST
 		response.content = Templates.HTML_REDIRECT.replace("{{url}}", config.HOST)
 		return response
@@ -48,8 +47,14 @@ def verify(request):
 	return response
 
 def success(request):
-	response = HttpResponse()
-	response.content = Templates.HTML_AUTH_SUCCESS.replace("{{screen_name}}", request.GET['name'])
+	name = request.GET.get['name']
+	if name:
+		response = HttpResponse()
+		response.content = Templates.HTML_AUTH_SUCCESS.replace("{{screen_name}}", name)
+	else:
+		response = HttpResponse(status=302)\
+		response['Location'] = config.HOST
+		response.content = Templates.HTML_REDIRECT.replace("{{url}}", config.HOST)
 	return response
 
 
