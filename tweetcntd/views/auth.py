@@ -4,28 +4,25 @@ from tweetcntd import config
 from tweetcntd.models.database import Database
 from tweetcntd.models.twitter import TwitterClient
 from tweetcntd.models.twitter import TwitterUser
+from tweetcntd.views import utils
 from tweetcntd.views import Templates
 
 def authorize(request):
 	if request.GET.get('key') != config.AUTH_KEY:
-		response = HttpResponse(status=302)\
-		response['Location'] = config.HOST
-		response.content = Templates.HTML_REDIRECT.replace("{{url}}", config.HOST)
-		return response
+		return utils.Redirect2HomePage()
 	
 	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
 				callback_url="%s/auth/verify/" % config.HOST)
 	url = client.get_authorize_url()
 	
-	response = HttpResponse()
-	response.status_code = 302
-	response['Location'] = url
-	response.content = Templates.HTML_REDIRECT.replace("{{url}}", url)
-	return response
+	return utils.Redirect2URL(url)
 
 def verify(request):
-	auth_token = request.GET["oauth_token"]
-	auth_verifier = request.GET["oauth_verifier"]
+	auth_token = request.GET.get('oauth_token')
+	auth_verifier = request.GET.get('oauth_verifier')
+	
+	if not auth_token or not auth_verifier:
+		return utils.Redirect2HomePage()
 	
 	# Request Access Token & Secret
 	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
@@ -40,21 +37,16 @@ def verify(request):
 	
 	# Redirect to success page.
 	url = "%s/auth/success/?name=%s" % (config.HOST, screen_name)
-	response = HttpResponse()
-	response.status_code = 302
-	response['Location'] = url
-	response.content = Templates.HTML_REDIRECT.replace("{{url}}", url)
-	return response
+	return utils.Redirect2URL(url)
 
 def success(request):
-	name = request.GET.get['name']
-	if name:
-		response = HttpResponse()
-		response.content = Templates.HTML_AUTH_SUCCESS.replace("{{screen_name}}", name)
-	else:
-		response = HttpResponse(status=302)\
-		response['Location'] = config.HOST
-		response.content = Templates.HTML_REDIRECT.replace("{{url}}", config.HOST)
+	name = request.GET.get('name')
+	
+	if not name:
+		return utils.Redirect2HomePage()
+	
+	response = HttpResponse()
+	response.content = Templates.HTML_AUTH_SUCCESS.replace("{{screen_name}}", name)
 	return response
 
 
