@@ -6,13 +6,14 @@ from tweetcntd.models.twitter import TwitterClient
 from tweetcntd.models.twitter import TwitterUser
 from tweetcntd.views import utils
 from tweetcntd.views import Templates
+from urllib.parse import urljoin
 
 def authorize(request):
 	if request.GET.get('key') != config.AUTH_KEY:
 		return utils.Redirect2HomePage()
 	
 	client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
-				callback_url="%s/auth/verify/" % config.HOST)
+				callback_url=urljoin(config.HOST, '/auth/verify/') )
 	url = client.get_authorize_url()
 	
 	return utils.Redirect2URL(url)
@@ -36,7 +37,7 @@ def verify(request):
 	database.close()
 	
 	# Redirect to success page.
-	url = "%s/auth/success/?name=%s" % (config.HOST, screen_name)
+	url = urljoin(config.HOST, "/auth/success/?name=%s" % screen_name)
 	return utils.Redirect2URL(url)
 
 def success(request):
