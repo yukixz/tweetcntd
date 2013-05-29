@@ -2,10 +2,10 @@ from django.conf.urls import patterns, url
 from tweetcntd import config
 
 def list(request):
-	pass
+    pass
 
 
 if config.ADMIN_ENABLED:
-	urlpatterns = patterns('tweetcntd.views',
-	url(r'^list/$', 'admin.list'),
+    urlpatterns = patterns('tweetcntd.views',
+    url(r'^list/$', 'admin.list'),
 )
