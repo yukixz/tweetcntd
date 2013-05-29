@@ -61,6 +61,32 @@ def count_user(client, user, start_time, end_time,
 	# return
 	return sum, re, rt, rto
 
+def exception(request):
+	try:
+		response = request.json()
+		status = request.status_code
+		error = response['errors'][0]['code']
+	except:
+		errcode = 0
+	
+	# https://dev.twitter.com/docs/error-codes-responses
+	if error==32 or error==89:
+		# 32: Could not authenticate you
+		# 89: Invalid or expired token
+		pass
+	elif error==64:
+		# 64: Your account is suspended and is not permitted to access this feature
+		pass
+	elif error==130:
+		# Over capacity
+		pass
+	elif error==135:
+		# Could not authenticate you
+		# Corresponds with a HTTP 401 - it means that your oauth_timestamp is either ahead or behind our acceptable range
+		pass
+	
+	return {}
+
 def format_time(ss, MONTH2NUMBER={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06',
 		'Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}):
 	return ''.join(( ss[26:30],MONTH2NUMBER[ss[4:7]],ss[8:10],ss[11:13],ss[14:16],ss[17:19] ))
