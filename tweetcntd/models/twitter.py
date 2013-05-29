@@ -7,6 +7,11 @@ class TwitterUser():
 		self.access_secret = secret
 	
 
+class RequestError(Exception):
+	def __init__(self, r):
+		self.request = r
+	
+
 class TwitterClient():
 	def __init__(self, consumer_key, consumer_secret, callback_url=''):
 		self.client = OAuthClient(
@@ -15,11 +20,22 @@ class TwitterClient():
 			callback_url = callback_url
 		)
 	
+	def request(self, method, url, params, token, secret):
+		r = self.client.request(method, url, params, token, secret)
+		if r.status_code==200: return r
+		else: raise RequestError(r)
+	
+	def get (url, params={}, token='', secret=''):
+		return self.request('GET', url, params, token, secret)
+	
+	def post(url, params={}, token='', secret=''):
+		return self.request('POST', url, params, token, secret)
+	
 	
 	def get_authorize_url(self):
 		request_url = "https://api.twitter.com/oauth/request_token"
 		authorize_url = "https://api.twitter.com/oauth/authorize"
-		r = self.client.post(request_url)
+		r = self.post(request_url)
 		
 		token = parse_qs(r.text)['oauth_token'][0]
 		authorize_url += "?oauth_token=%s" % token
@@ -28,7 +44,7 @@ class TwitterClient():
 	def get_access_token(self, token, verifier):
 		access_url = "https://api.twitter.com/oauth/access_token"
 		params = {'oauth_verifier': verifier}
-		r = self.client.post(access_url, params=params, token=token)
+		r = self.post(access_url, params=params, token=token)
 		
 		result = parse_qs(r.text)
 		return int(result["user_id"][0]), result["screen_name"][0], result["oauth_token"][0], result["oauth_token_secret"][0]
@@ -40,14 +56,14 @@ class TwitterClient():
 		# if since_id: params['since_id'] = since_id
 		if max_id>0: params['max_id'] = max_id
 		if count>0: params['count'] = count
-		r = self.client.get(url, params=params,
+		r = self.get(url, params=params,
 					token=user.access_token, secret=user.access_secret)
 		return r.json()
 	
 	def tweet(self, user, status):
 		url = "https://api.twitter.com/1.1/statuses/update.json"
 		params = {'status':  status}
-		r = self.client.post(url, params,
+		r = self.post(url, params,
 					token=user.access_token, secret=user.access_secret)
 		# return r.json()
 	

@@ -4,10 +4,6 @@ import urllib.parse
 import hashlib, random, time
 import requests
 
-class RequestError(Exception):
-	def __init__(self, r):
-		self.request = r
-
 class OAuthClient():
 	def __init__(self, consumer_key, consumer_secret, callback_url=''):
 		self.consumer_key = consumer_key
@@ -50,15 +46,8 @@ class OAuthClient():
 		return params
 	
 	#@public_method:
-	def get (self, url, params={}, token='', secret=''):
-		params = self._form_signed_params('GET', url, token, secret, params)
-		r = requests.get(url=url, headers=self.oauth_headers, params=params)
-		if r.status_code==200: return r
-		else: raise RequestError(r)
-	
-	def post(self, url, params={}, token='', secret=''):
-		params = self._form_signed_params('POST', url, token, secret, params)
-		r = requests.post(url=url, headers=self.oauth_headers, params=params)
-		if r.status_code==200: return r
-		else: raise RequestError(r)
+	def request(self, method, url, params={}, token='', secret=''):
+		params = self._form_signed_params(method, url, token, secret, params)
+		r = requests.request(method=method, url=url, headers=self.oauth_headers, params=params)
+		return r
 	
