@@ -49,7 +49,7 @@ def count_user(client, user, start_time, end_time,
             continue
         elif tweet_time > start_time:
             sum +=1
-            if 'retweeted_status' in tweet:
+            if tweet.get('retweeted_status', False):
                 rto += 1
             elif PATTERN_RE.match(tweet["text"]):
                 re += 1
