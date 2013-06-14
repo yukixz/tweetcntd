@@ -38,7 +38,7 @@ class Database():
     
     def create_table(self):
         SQL_CREATE_TABLE = '''CREATE TABLE %s \
-            (id BIGINT Unsigned NOT NULL, token CHAR(50) NOT NULL, secret CHAR(41) NOT NULL, name CHAR(15), \
+            (id BIGINT Unsigned NOT NULL, token CHAR(64) NOT NULL, secret CHAR(50) NOT NULL, name CHAR(15), \
             t_sum INT Unsigned, t_re INT Unsigned, t_rt INT Unsigned, t_rto INT Unsigned, t_last BIGINT Unsigned, \
             PRIMARY KEY (id) )''' % \
             (self.TABLE)
