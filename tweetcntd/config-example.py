@@ -1,5 +1,5 @@
 ''' Application
- No need to edit.
+ Not need to edit.
 '''
 CONSUMER_KEY = 'CjUSfZ1IDHrBe9dLu5Viyw'
 CONSUMER_SECRET = '3iUPswMl97gxxirCK5rVN3MvNqM5AcB1dTnxlmdMyQ'
@@ -18,14 +18,14 @@ POST_TIME = '23:30'	# Hour:Minte. Local time
 '''
 DATABASE_HOST = 'localhost'
 DATABASE_PORT = 3306
-DATABASE_DATABASE = 'tweetcntd'
-DATABASE_TABLE = 'tweetcntd'
+DATABASE_DATABASE = 'YourDatabaseName'
+DATABASE_TABLE = 'YourDatabaseTable'
 DATABASE_ISINNODB = True
-DATABASE_USERNAME = 'tweetcntd'
-DATABASE_PASSWORD = 'i&X6nHFQc^FExN17'
+DATABASE_USERNAME = 'YourDatabaseUsername'
+DATABASE_PASSWORD = 'YourDatabasePassword'
 
 ''' Admin Tools
  Don't forget to change ADMIN_KEY if want to use Admin Tools.
 '''
 ADMIN_ENABLED = False
-ADMIN_KEY = '96Apt&#Az9xPU*Jq'
+ADMIN_KEY = 'YourAdminKey'
