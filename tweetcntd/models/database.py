@@ -39,7 +39,7 @@ class Database():
     def create_table(self):
         SQL_CREATE_TABLE = '''CREATE TABLE %s \
             (id BIGINT Unsigned NOT NULL, token CHAR(64) NOT NULL, secret CHAR(50) NOT NULL, \
-                name CHAR(15), enabled BIT, \ 
+                name CHAR(15), enabled BIT default 1, \ 
             PRIMARY KEY (id) )''' % \
             (self.TABLE)
         self._execute(SQL_CREATE_TABLE)

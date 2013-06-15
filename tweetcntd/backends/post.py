@@ -39,7 +39,7 @@ class Post():
                 if sum>config.TWEET_MIN and sum>0:
                     status = Templates.TWITTER_TWEET.replace('{{name}}', user.name) % \
                         ( sum, re, float(re)/sum*100 , rt, float(rt)/sum*100, rto, float(rto)/sum*100 )
-                    print(status) #self.client.tweet(oauth_user, status)
+                    self.client.tweet(oauth_user, status)
                 
             except TwitterError as e:
                 if e.code==1: continue
