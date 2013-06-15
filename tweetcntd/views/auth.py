@@ -2,8 +2,7 @@ from django.conf.urls import patterns, url
 from django.http import HttpResponse
 from tweetcntd import config
 from tweetcntd.models.database import Database
-from tweetcntd.models.twitter import TwitterClient
-from tweetcntd.models.twitter import TwitterUser
+from tweetcntd.models.twitter import TwitterClient, TwitterUser
 from tweetcntd.views import utils
 from tweetcntd.views import Templates
 from urllib.parse import urljoin
@@ -14,7 +13,9 @@ def authorize(request):
     
     client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
                 callback_url=urljoin(config.HOST, '/auth/verify/') )
-    url = client.get_authorize_url()
+    try: url = client.get_authorize_url()
+    except:
+        return HttpResponse(status=500)
     
     return utils.Redirect2URL(url)
 
@@ -27,14 +28,19 @@ def verify(request):
     
     # Request Access Token & Secret
     client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
-    user_id, screen_name, access_token, access_secret = client.get_access_token(auth_token, auth_verifier)
+    try: user_id, screen_name, access_token, access_secret = client.get_access_token(auth_token, auth_verifier)
+    except:
+        return HttpResponse(status=500)
     
     # Save to Database
-    database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
-        config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
-        config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
-    database.insert_user(user_id, screen_name, access_token, access_secret)
-    database.close()
+    try:
+        database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
+            config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
+            config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
+        database.insert_user(user_id, screen_name, access_token, access_secret)
+        database.close()
+    except:
+        return HttpResponse(status=500)
     
     # Redirect to success page.
     url = urljoin(config.HOST, "/auth/success/?name=%s" % screen_name)
