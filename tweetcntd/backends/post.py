@@ -35,12 +35,12 @@ class Post():
     def run(self):
         li = self.database.query_all()
         for user in li:
-            log.info('Counting User: ' % (user.id))
+            log.info('Counting User: %d...' % (user.id))
             if not user.enabled: continue
             try:
                 oauth_user = TwitterUser(user.token, user.secret)
                 (sum, re, rt, rto) = self.count_user(oauth_user)
-                log.info('..Count %d: %d of %d, %d, %d.' % (sum, re, rt, rto))
+                log.info('..Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
                 
                 if sum>config.TWEET_MIN and sum>0:
                     status = Templates.TWITTER_TWEET.replace('{{name}}', user.name) % \

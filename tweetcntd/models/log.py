@@ -21,5 +21,5 @@ def getLogger():
         level=logging.INFO
     )
     
-    return logging.getLogger()\
+    return logging.getLogger()
 log = getLogger()
