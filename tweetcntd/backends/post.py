@@ -12,6 +12,7 @@ from tweetcntd.views import Templates
 
 class Post():
     def __init__(self):
+        log.warning('======== backends.post ========')
         self.database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
             config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
             config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
