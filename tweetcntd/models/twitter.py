@@ -16,9 +16,11 @@ ERROR_MESSAGE = {
     5: 'Critical!',
 }
 class TwitterError(Exception):
-    def __init__(self, code=0):
+    def __init__(self, code=0, http_status=200, error_code=0):
         self.code = code
         self.message = ERROR_MESSAGE.get(code, 'Invalid Error Code.')
+        self.http_status = http_status
+        self.error_code = error_code
     
 
 class TwitterClient():
