@@ -5,6 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from datetime import datetime, timedelta
 import re
 from tweetcntd import config
+from tweetcntd.models.log import log
 from tweetcntd.models.database import Database
 from tweetcntd.models.twitter import TwitterClient, TwitterError, TwitterUser
 from tweetcntd.views import Templates
@@ -14,10 +15,12 @@ class Post():
         self.database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
             config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
             config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
+        log.info('Initializing Database... OK.')
         self.client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
+        log.info('Initializing TwitterClient... OK.')
         
-        self.PATTERN_RE=re.compile(r'^(@\w+)\b.*$')
-        self.PATTERN_RT=re.compile(r'^.*?(RT ?@\w+)\b.*$')
+        self.PATTERN_RE=re.compile(r'^@\w+\b')
+        self.PATTERN_RT=re.compile(r'^.*?RT ?@\w+\b')
         self.MONTH2NUMBER={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
         
         ''' Init formatted start_time and end_time. '''
@@ -27,14 +30,17 @@ class Post():
         post_utc = datetime.strptime(post_str, '%Y-%m-%d %H:%M') - delta
         self.end_time = post_utc.strftime("%Y%m%d%H%M%S")
         self.start_time = (post_utc-timedelta(hours=24)).strftime("%Y%m%d%H%M%S")
+        log.info('Initializing time... [%s,%s]' % (self.start_time, self.end_time))
         
     def run(self):
         li = self.database.query_all()
         for user in li:
+            log.info('Counting User: ' % (user.id))
             if not user.enabled: continue
             try:
                 oauth_user = TwitterUser(user.token, user.secret)
                 (sum, re, rt, rto) = self.count_user(oauth_user)
+                log.info('..Count %d: %d of %d, %d, %d.' % (sum, re, rt, rto))
                 
                 if sum>config.TWEET_MIN and sum>0:
                     status = Templates.TWITTER_TWEET.replace('{{name}}', user.name) % \
@@ -42,6 +48,7 @@ class Post():
                     self.client.tweet(oauth_user, status)
                 
             except TwitterError as e:
+                log.error('%d: %d %d' % (user.id, e.http_status, e.error_code))
                 if e.code==1: continue
                 if e.code==2: break
                 if e.code==3: self.database.disable_user(user.id)
