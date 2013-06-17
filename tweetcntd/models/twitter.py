@@ -36,8 +36,7 @@ class TwitterClient():
         r = self.client.request(method, url, params, token, secret)
         
         status_code = r.status_code
-        r_content = r.json()
-        try:    error_code = ['errors'][0]['code']
+        try:    error_code = r.json()['errors'][0]['code']
         except: error_code = 0
         
         # https://dev.twitter.com/docs/error-codes-responses
