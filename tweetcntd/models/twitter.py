@@ -1,4 +1,4 @@
-from cgi import parse_qs
+from urllib.parse import parse_qs
 from tweetcntd.models.oauth import OAuthClient
 
 class TwitterUser():

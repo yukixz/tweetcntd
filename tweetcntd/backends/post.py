@@ -7,7 +7,7 @@ import re
 from tweetcntd import config
 from tweetcntd.models.log import log
 from tweetcntd.models.database import Database
-from tweetcntd.models.twitter import TwitterClient, TwitterError, TwitterUser
+from tweetcntd.models.twitter import *
 from tweetcntd.views import Templates
 
 class Post():
