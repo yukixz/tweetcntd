@@ -1,7 +1,9 @@
 <uwsgi>
   <master/>
-  <socket>127.0.0.1:9000</socket>
-  <plugins>python3</plugins>
-  <chdir>/path/to/tweetcntd</chdir>
   <module>tweetcntd.wsgi</module>
+  <plugins>python3</plugins>
+  
+  <socket>127.0.0.1:9000</socket>
+  <chdir>/path/to/tweetcntd</chdir>
+  <touch-reload>/path/to/tweetcntd/uwsgi.reload</touch-reload>
 </uwsgi>
