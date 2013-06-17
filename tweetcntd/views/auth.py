@@ -1,8 +1,9 @@
 from django.conf.urls import patterns, url
 from django.http import HttpResponse
 from tweetcntd import config
+from tweetcntd.models.log import log
 from tweetcntd.models.database import Database
-from tweetcntd.models.twitter import TwitterClient, TwitterUser
+from tweetcntd.models.twitter import *
 from tweetcntd.views import utils
 from tweetcntd.views import Templates
 from urllib.parse import urljoin
@@ -14,7 +15,8 @@ def authorize(request):
     client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
                 callback_url=urljoin(config.HOST, '/auth/verify/') )
     try: url = client.get_authorize_url()
-    except:
+    except TwitterError as e:
+        log.error('%d %d' % (e.http_status, e.error_code))
         return HttpResponse(status=500)
     
     return utils.Redirect2URL(url)
@@ -29,7 +31,8 @@ def verify(request):
     # Request Access Token & Secret
     client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
     try: user_id, screen_name, access_token, access_secret = client.get_access_token(auth_token, auth_verifier)
-    except:
+    except TwitterError as e:
+        log.error('%d %d' % (e.http_status, e.error_code))
         return HttpResponse(status=500)
     
     # Save to Database
@@ -39,7 +42,8 @@ def verify(request):
             config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
         database.insert_user(user_id, screen_name, access_token, access_secret)
         database.close()
-    except:
+    except Exception as e:
+        log.error(e)
         return HttpResponse(status=500)
     
     # Redirect to success page.
