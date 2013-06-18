@@ -41,7 +41,7 @@ class Post():
             try:
                 oauth_user = TwitterUser(user.token, user.secret)
                 (sum, re, rt, rto) = self.count_user(oauth_user)
-                log.info('..Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
+                log.info('.. Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
                 
                 if sum>config.TWEET_MIN and sum>0:
                     status = Templates.TWITTER_TWEET.replace('{{name}}', user.name) % \
@@ -64,6 +64,7 @@ class Post():
         
         # Generate user's new tweets' blocks
         while self.format_time(block[len(block)-1]["created_at"]) > self.start_time:
+            log.info('.. Query user_timeline, maxid: %d' % max_id)
             block = self.client.load_usrtl(user, max_id)
             timeline.extend(block)
             max_id = block[len(block)-1]["id"]
