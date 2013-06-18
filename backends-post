@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 dir=$(dirname $0)
 cd $dir
-date >> run.log
+date >> log/backends-post.log
 python3 tweetcntd/backends/post.py
