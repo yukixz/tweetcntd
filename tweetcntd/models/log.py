@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from tweetcntd import config
 
-def getLogger():
+def init_log():
     # path
     dir = config.LOG_DIRECTORY
     if not os.path.exists(dir): os.makedirs(dir)
@@ -20,6 +20,10 @@ def getLogger():
         format=FORMAT,
         level=logging.INFO
     )
-    
-    return logging.getLogger()
-log = getLogger()
+
+init_log()
+log = logging.getLogger('tweetcntd')
+
+# Disable logging of requests
+requests_log = logging.getLogger("requests")
+requests_log.setLevel(logging.WARNING)
