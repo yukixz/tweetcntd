@@ -1,9 +1,8 @@
 from django.conf.urls import patterns, url
-from django.http import HttpResponse
-from tweetcntd.views import Templates
+from tweetcntd import templates
 
 def main(request):
-    return HttpResponse(Templates.HTML_HOME)
+    return templates.home()
 
 
 urlpatterns = patterns('tweetcntd.views',

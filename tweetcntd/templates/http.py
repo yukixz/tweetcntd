@@ -21,7 +21,7 @@ def home():
     response = HttpResponse(status=200)
     response.content = HTML200_HOME\
         .replace("{{version}}", config.VERSION)\
-        .replace("{{tweet_min}}", config.TWEET_MIN)
+        .replace("{{tweet_min}}", str(config.TWEET_MIN))
     return response
 
 def auth_success(name):

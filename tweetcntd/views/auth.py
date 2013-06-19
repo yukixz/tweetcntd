@@ -1,39 +1,37 @@
 from django.conf.urls import patterns, url
-from django.http import HttpResponse
 from tweetcntd import config
+from tweetcntd import templates
 from tweetcntd.models.log import log
 from tweetcntd.models.database import Database
 from tweetcntd.models.twitter import *
-from tweetcntd.views import utils
-from tweetcntd.views import Templates
 from urllib.parse import urljoin
 
 def authorize(request):
     if request.GET.get('key') != config.AUTH_KEY:
-        return utils.Redirect2HomePage()
+        return templates.redirect_to_home()
     
     client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET,
                 callback_url=urljoin(config.HOST, '/auth/verify/') )
     try: url = client.get_authorize_url()
     except TwitterError as e:
         log.error('%d %d' % (e.http_status, e.error_code))
-        return HttpResponse(status=500)
+        return templates.internal_server_error()
     
-    return utils.Redirect2URL(url)
+    return templates.redirect(url)
 
 def verify(request):
     auth_token = request.GET.get('oauth_token')
     auth_verifier = request.GET.get('oauth_verifier')
     
     if not auth_token or not auth_verifier:
-        return utils.Redirect2HomePage()
+        return templates.redirect_to_home()
     
     # Request Access Token & Secret
     client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
     try: user_id, screen_name, access_token, access_secret = client.get_access_token(auth_token, auth_verifier)
     except TwitterError as e:
         log.error('%d %d' % (e.http_status, e.error_code))
-        return HttpResponse(status=500)
+        return templates.internal_server_error()
     
     # Save to Database
     try:
@@ -44,25 +42,13 @@ def verify(request):
         database.close()
     except Exception as e:
         log.error(e)
-        return HttpResponse(status=500)
+        return templates.internal_server_error()
     
-    # Redirect to success page.
-    url = urljoin(config.HOST, "/auth/success/?name=%s" % screen_name)
-    return utils.Redirect2URL(url)
-
-def success(request):
-    name = request.GET.get('name')
-    
-    if not name:
-        return utils.Redirect2HomePage()
-    
-    response = HttpResponse()
-    response.content = Templates.HTML_AUTH_SUCCESS.replace("{{screen_name}}", name)
-    return response
+    # Show success page.
+    return templates.auth_success(name)
 
 
 urlpatterns = patterns('tweetcntd.views',
     url(r'^authorize/$', 'auth.authorize'),
     url(r'^verify/$', 'auth.verify'),
-    url(r'^success/$', 'auth.success'),
 )
