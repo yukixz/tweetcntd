@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import re
 from tweetcntd import config
 from tweetcntd.models.log import log
-from tweetcntd.models.database import Database
+from tweetcntd.models.database import *
 from tweetcntd.models.twitter import *
 from tweetcntd.views import Templates
 
@@ -90,11 +90,8 @@ class Post():
     
     def format_time(self, ss):
         return ''.join(( ss[26:30], self.MONTH2NUMBER[ss[4:7]],ss[8:10],ss[11:13],ss[14:16],ss[17:19] ))
-        
-    def close(self):
-        self.database.close()
+    
 
 if __name__ == '__main__':
     app = Post()
     app.run()
-    app.close()

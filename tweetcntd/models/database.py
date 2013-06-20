@@ -22,8 +22,7 @@ class Database():
             else:
                 raise
     
-    # __del__ ?
-    def close(self):
+    def __del__(self):
         if self.ISINNODB:
             self.cnn.commit()
         self.cur.close()
@@ -32,9 +31,10 @@ class Database():
     def _execute(self, sql):
         try:
             self.cur.execute(sql)
-        except mysql.connector.Error as err:
-            raise
-    
+        except mysql.connector.Error as e:
+            if e.errno==1062:
+                raise DatabaseError(1, e)
+            raise DatabaseError(-1, e)
     
     def create_table(self):
         SQL_CREATE_TABLE = '''CREATE TABLE %s \
@@ -55,6 +55,11 @@ class Database():
             (self.TABLE, id)
         self._execute(SQL_DISABLE_USER)
     
+    def enable_user(self, id):
+        SQL_ENABLE_USER = '''UPDATE %s SET enabled=1 WHERE id=%d''' % \
+            (self.TABLE, id)
+        self._execute(SQL_ENABLE_USER)
+    
     def insert_user(self, id, name, token, secret):
         SQL_INSERT_USER = '''INSERT INTO %s (id, token, secret, name, enabled) \
             VALUES (%d, "%s", "%s", "%s", 1)''' % \
@@ -64,6 +69,14 @@ class Database():
     def query_all(self):
         SQL_QUERY_ALL = '''SELECT * FROM %s''' % (self.TABLE)
         self._execute(SQL_QUERY_ALL)
+        li = []
+        for o in self.cur:
+            li.append(DatabaseUser(o[0], o[1], o[2], o[3], o[4]))
+        return li
+    
+    def query_enabled(self):
+        SQL_QUERY_ENABLED = '''SELECT * FROM %s WHERE enabled=1''' % (self.TABLE)
+        self._execute(SQL_QUERY_ENABLED)
         li = []
         for o in self.cur:
             li.append(DatabaseUser(o[0], o[1], o[2], o[3], o[4]))
@@ -83,3 +96,22 @@ class DatabaseUser():
         self.name = name
         self.enabled = enabled
     
+
+ERROR_MESSAGE = {
+    0: 'Anything is OK.',
+    1: 'User already exist.',
+    7: 'Critical!',
+}
+class DatabaseError(Exception):
+    def __init__(self, code=0, e=None):
+        self.code = code
+        self.message = ERROR_MESSAGE.get(code, 'Invalid Error Code.')
+        if e:
+            self.errno = e.errno
+            self.sqlstate = e.sqlstate
+            self.sqlmsg = e.msg
+        else:
+            self.errno = None
+            self.sqlstate = None
+            self.sqlmsg = None
+
