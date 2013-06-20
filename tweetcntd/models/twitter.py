@@ -16,7 +16,7 @@ ERROR_MESSAGE = {
     5: 'Critical!',
 }
 class TwitterError(Exception):
-    def __init__(self, code=0, http_status=0, error_code=0):
+    def __init__(self, code=0, http_status=None, error_code=None):
         self.code = code
         self.message = ERROR_MESSAGE.get(code, 'Invalid Error Code.')
         self.http_status = http_status
@@ -55,42 +55,42 @@ class TwitterClient():
         if status_code==406:    # 406 Not Acceptable
             pass
         if status_code==408:    #### 408 Request Timeout
-            raise TwitterError(4)
+            raise TwitterError(4, status_code,error_code)
         if status_code==410:    # 410 Gone
             pass
         if status_code==422:    # 422 Unprocessable Entity
             pass
         if status_code==429:    # 429 Too Many Requests
-            raise TwitterError(1)
+            raise TwitterError(1, status_code,error_code)
         if status_code==500:    # 500 Internal Server Error
-            raise TwitterError(2)
+            raise TwitterError(2, status_code,error_code)
         if status_code==502:    # 502 Bad Gateway
-            raise TwitterError(2)
+            raise TwitterError(2, status_code,error_code)
         if status_code==503:    # 503 Service Unavailable
-            raise TwitterError(2)
+            raise TwitterError(2, status_code,error_code)
         if status_code==504:    # 504 Gateway timeout
-            raise TwitterError(2)
+            raise TwitterError(2, status_code,error_code)
         
         ## Error Code corresponded with HTTP Status Code above are ignored.
         if error_code==32:  # 32 Could not authenticate you
-            raise TwitterError(3)
+            raise TwitterError(3, status_code,error_code)
         if error_code==34:  # 34 Sorry, that page does not exist
-            raise TwitterError(3)
+            raise TwitterError(3, status_code,error_code)
         if error_code==64:  # 64 Your account is suspended and is not permitted to access this feature
-            raise TwitterError(3)
+            raise TwitterError(3, status_code,error_code)
         #if error_code==88: # 88 Rate limit exceeded
         if error_code==89:  # 89 Invalid or expired token
-            raise TwitterError(3)
+            raise TwitterError(3, status_code,error_code)
         #if error_code==130:# 130 Over capacity
         #if error_code==131:# 131 Internal error
         if error_code==135: # 135 Could not authenticate you
-            raise TwitterError(1)
+            raise TwitterError(1, status_code,error_code)
         if error_code==187: # 187 Status is a duplicate
-            raise TwitterError(1)
+            raise TwitterError(1, status_code,error_code)
         if error_code==215: # 215 Bad authentication data
-            raise TwitterError(2)
+            raise TwitterError(2, status_code,error_code)
         
-        raise TwitterError(-1)
+        raise TwitterError(-1, status_code,error_code)
     
     def get (self, url, params={}, token='', secret=''):
         return self.request('GET', url, params, token, secret)
