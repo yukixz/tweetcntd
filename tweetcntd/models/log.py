@@ -19,11 +19,16 @@ def init_log():
         filemode='a',
         format=FORMAT,
         level=logging.INFO
+        # level=logging.DEBUG
     )
 
 init_log()
 log = logging.getLogger('tweetcntd')
 
-# Disable logging of requests
+#### Disable logging of requests
 requests_log = logging.getLogger("requests")
 requests_log.setLevel(logging.WARNING)
+
+#### Disable Deprecation Warning
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
