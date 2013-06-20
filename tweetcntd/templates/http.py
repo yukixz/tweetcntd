@@ -26,7 +26,7 @@ def home():
 
 def auth_success(name):
     response = HttpResponse(status=200)
-    response.content = HTML200_HOME\
+    response.content = HTML200_SUCCESS\
         .replace("{{name}}", name)
     return response
 

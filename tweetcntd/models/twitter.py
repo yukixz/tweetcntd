@@ -16,7 +16,7 @@ ERROR_MESSAGE = {
     5: 'Critical!',
 }
 class TwitterError(Exception):
-    def __init__(self, code=0, http_status=200, error_code=0):
+    def __init__(self, code=0, http_status=0, error_code=0):
         self.code = code
         self.message = ERROR_MESSAGE.get(code, 'Invalid Error Code.')
         self.http_status = http_status
@@ -90,7 +90,7 @@ class TwitterClient():
         if error_code==215: # 215 Bad authentication data
             raise TwitterError(2)
         
-        return r
+        raise TwitterError(-1)
     
     def get (self, url, params={}, token='', secret=''):
         return self.request('GET', url, params, token, secret)
