@@ -5,10 +5,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 from datetime import datetime, timedelta
 import re
 from tweetcntd import config
+from tweetcntd import templates
 from tweetcntd.models.log import log
 from tweetcntd.models.database import *
 from tweetcntd.models.twitter import *
-from tweetcntd.views import Templates
 
 class Post():
     def __init__(self):
@@ -34,18 +34,16 @@ class Post():
         log.info('Initializing time... [%s,%s]' % (self.start_time, self.end_time))
         
     def run(self):
-        li = self.database.query_all()
+        li = self.database.query_enabled()
         for user in li:
             log.info('Counting User: %d...' % (user.id))
-            if not user.enabled: continue
             try:
                 oauth_user = TwitterUser(user.token, user.secret)
                 (sum, re, rt, rto) = self.count_user(oauth_user)
                 log.info('.. Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
                 
                 if sum>config.TWEET_MIN and sum>0:
-                    status = Templates.TWITTER_TWEET.replace('{{name}}', user.name) % \
-                        ( sum, re, float(re)/sum*100 , rt, float(rt)/sum*100, rto, float(rto)/sum*100 )
+                    status = templates.tweet(user.name, sum, re, rt, rto)
                     self.client.tweet(oauth_user, status)
                 
             except TwitterError as e:

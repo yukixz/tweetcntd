@@ -37,7 +37,7 @@ class TwitterClient():
         
         status_code = r.status_code
         try:    error_code = r.json()['errors'][0]['code']
-        except: error_code = 0
+        except: error_code = -1
         
         # https://dev.twitter.com/docs/error-codes-responses
         if status_code==200:    # 200 OK
