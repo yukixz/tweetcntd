@@ -3,7 +3,7 @@ import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from datetime import datetime, timedelta
-import re
+import random, re
 from tweetcntd import config
 from tweetcntd import templates
 from tweetcntd.models.log import log
@@ -13,28 +13,30 @@ from tweetcntd.models.twitter import *
 class Post():
     def __init__(self):
         log.warning('======== backends.post ========')
+        log.info('Initializing Database...')
         self.database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
             config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
             config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
-        log.info('Initializing Database... OK.')
+        log.info('Initializing TwitterClient...')
         self.client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
-        log.info('Initializing TwitterClient... OK.')
         
         self.PATTERN_RE=re.compile(r'^@\w+\b')
         self.PATTERN_RT=re.compile(r'^.*?RT ?@\w+\b')
         self.MONTH2NUMBER={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
         
         ''' Init formatted start_time and end_time. '''
+        log.info('Initializing time...')
         delta = timedelta(hours=config.TIMEZONE)
         now_tz = datetime.utcnow() + delta
         post_str = now_tz.strftime('%Y-%m-%d ') + config.POST_TIME
         post_utc = datetime.strptime(post_str, '%Y-%m-%d %H:%M') - delta
         self.end_time = post_utc.strftime("%Y%m%d%H%M%S")
         self.start_time = (post_utc-timedelta(hours=24)).strftime("%Y%m%d%H%M%S")
-        log.info('Initializing time... [%s,%s]' % (self.start_time, self.end_time))
+        log.info('.. time: %s ~ %s.' % (self.start_time, self.end_time))
         
     def run(self):
         li = self.database.query_enabled()
+        random.shuffle(li)
         for user in li:
             log.info('Counting User: %d...' % (user.id))
             try:
@@ -47,7 +49,7 @@ class Post():
                     self.client.tweet(oauth_user, status)
                 
             except TwitterError as e:
-                log.error('%d: %d %d' % (user.id, e.http_status, e.error_code))
+                log.error('%d: %d %s.\n %d %d' % (user.id, e.code, e.message, e.http_status, e.error_code))
                 if e.code==1: continue
                 if e.code==2: break
                 if e.code==3: self.database.disable_user(user.id)
@@ -62,7 +64,7 @@ class Post():
         
         # Generate user's new tweets' blocks
         while self.format_time(block[len(block)-1]["created_at"]) > self.start_time:
-            log.info('.. Query user_timeline, maxid: %d' % max_id)
+            log.info('.. Query user_timeline, maxid: %d.' % max_id)
             block = self.client.load_usrtl(user, max_id)
             timeline.extend(block)
             max_id = block[len(block)-1]["id"]
