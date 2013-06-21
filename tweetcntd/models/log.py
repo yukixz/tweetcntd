@@ -7,8 +7,8 @@ def init_log():
     # path
     dir = config.LOG_DIRECTORY
     if not os.path.exists(dir): os.makedirs(dir)
-    utcnow = datetime.utcnow()
-    file = utcnow.strftime("%Y-%m-%d.log")
+    now = datetime.now()
+    file = now.strftime("%Y-%m-%d.log")
     PATH = os.path.join(dir,file)
     
     # format
