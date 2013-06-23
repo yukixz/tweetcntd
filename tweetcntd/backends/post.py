@@ -13,11 +13,11 @@ from tweetcntd.models.twitter import *
 class Post():
     def __init__(self):
         log.warning('======== backends.post ========')
-        log.info('Initializing Database...')
+        log.info('Initializing Database ...')
         self.database = Database(config.DATABASE_HOST, config.DATABASE_PORT,
             config.DATABASE_DATABASE, config.DATABASE_TABLE, config.DATABASE_ISINNODB,
             config.DATABASE_USERNAME, config.DATABASE_PASSWORD)
-        log.info('Initializing TwitterClient...')
+        log.info('Initializing TwitterClient ...')
         self.client = TwitterClient(config.CONSUMER_KEY, config.CONSUMER_SECRET)
         
         self.PATTERN_RE=re.compile(r'^@\w+\b')
@@ -25,7 +25,7 @@ class Post():
         self.MONTH2NUMBER={'Jan':'01','Feb':'02','Mar':'03','Apr':'04','May':'05','Jun':'06','Jul':'07','Aug':'08','Sep':'09','Oct':'10','Nov':'11','Dec':'12'}
         
         ''' Init formatted start_time and end_time. '''
-        log.info('Initializing time...')
+        log.info('Initializing time ...')
         delta = timedelta(hours=config.TIMEZONE)
         now_tz = datetime.utcnow() + delta
         post_str = now_tz.strftime('%Y-%m-%d ') + config.POST_TIME
@@ -38,8 +38,8 @@ class Post():
         li = self.database.query_enabled()
         random.shuffle(li)
         for user in li:
-            log.info('Counting User: %d...' % (user.id))
             try:
+                log.info('Counting User: %d ...' % (user.id))
                 oauth_user = TwitterUser(user.token, user.secret)
                 (sum, re, rt, rto) = self.count_user(oauth_user)
                 log.info('.. Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
@@ -63,6 +63,7 @@ class Post():
         block = [{"created_at":"Tue Feb 14 00:00:00 +0000 9999"}]    ## Magic
         
         # Generate user's new tweets' blocks
+        log.info('.. Fetching user_timeline ...')
         while self.format_time(block[len(block)-1]["created_at"]) > self.start_time:
             log.info('.. Query user_timeline, maxid: %d.' % max_id)
             block = self.client.load_usrtl(user, max_id)
@@ -70,6 +71,7 @@ class Post():
             max_id = block[len(block)-1]["id"]
         
         # Count user's tweets
+        log.info('.. Counting user_timeline ...')
         (sum, re, rt, rto) = (0,0,0,0)
         for tweet in timeline:
             tweet_time = self.format_time(tweet["created_at"])
