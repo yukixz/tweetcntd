@@ -66,7 +66,7 @@ class Post():
         log.info('.. Fetching user_timeline ...')
         while self.format_time(block[len(block)-1]["created_at"]) > self.start_time:
             log.info('.. Query user_timeline, maxid: %d.' % max_id)
-            block = self.client.load_usrtl(user, max_id)
+            block = self.client.load_usrtl(user, max_id, count=200)
             timeline.extend(block)
             max_id = block[len(block)-1]["id"]
         
