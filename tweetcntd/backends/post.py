@@ -42,7 +42,7 @@ class Post():
         log.info('.. len: %d' % len(li))
         for user in li:
             try:
-                log.info('Counting User: %d ...' % (user.id))
+                log.info('Counting User: %s (%d) ...' % (user.name, user.id))
                 oauth_user = TwitterUser(user.token, user.secret)
                 (sum, re, rt, rto) = self.count_user(oauth_user)
                 log.info('.. Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
