@@ -44,11 +44,11 @@ class Post():
             try:
                 log.info('Counting User: %s (%d) ...' % (user.name, user.id))
                 oauth_user = TwitterUser(user.token, user.secret)
-                (sum, re, rt, rto) = self.count_user(oauth_user)
-                log.info('.. Count %d: %d of %d, %d, %d.' % (user.id, sum, re, rt, rto))
+                result = self.count_user(oauth_user)
+                log.info('.. Result: %s.' % result)
                 
-                if sum>config.TWEET_MIN and sum>0:
-                    status = templates.tweet(user.name, sum, re, rt, rto)
+                if result['sum']>config.TWEET_MIN and result['sum']>0:
+                    status = templates.tweet(user.name, **result)
                     self.client.tweet(oauth_user, status)
                 
             except TwitterError as e:
@@ -74,7 +74,8 @@ class Post():
         
         # Count user's tweets
         log.info('.. Counting user_timeline ...')
-        (sum, re, rt, rto) = (0,0,0,0)
+        sum, re, rt, rto = 0,0,0,0
+        mentions = {}
         for tweet in timeline:
             tweet_time = self.format_time(tweet["created_at"])
             if tweet_time > self.end_time:
@@ -87,10 +88,21 @@ class Post():
                     re += 1
                 elif self.PATTERN_RT.match(tweet["text"]):
                     rt +=1
+                
+                for u in tweet['entities']['user_mentions']:
+                    try: mentions[u['screen_name']] +=1
+                    except: mentions[u['screen_name']] =1
             else:
                 break # for
+        most_list, most_count = [], 0
+        for k,v in mentions.items():
+            if v>most_count:
+                most_count = v
+                most_list = [k]
+            elif v==most_count:
+                most_list.append(k)
         
-        return sum, re, rt, rto
+        return { 'sum':sum, 're':re, 'rt':rt, 'rto':rto, 'most_mention':most_list }
     
     def format_time(self, ss):
         return ''.join(( ss[26:30], self.MONTH2NUMBER[ss[4:7]],ss[8:10],ss[11:13],ss[14:16],ss[17:19] ))
