@@ -44,7 +44,7 @@ class Post():
             try:
                 log.info('Counting User: %s (%d) ...' % (user.name, user.id))
                 oauth_user = TwitterUser(user.token, user.secret)
-                result = self.count_user(oauth_user)
+                result = self.count_user(user.name, oauth_user)
                 log.info('.. Result: %s.' % result)
                 
                 if result['sum']>config.TWEET_MIN and result['sum']>0:
@@ -59,7 +59,7 @@ class Post():
                 if e.code==4: continue  # How to Retry?
                 if e.code==5: break
     
-    def count_user(self, user):
+    def count_user(self, name, user):
         # init
         max_id = 0
         timeline = []
@@ -90,6 +90,7 @@ class Post():
                     rt +=1
                 
                 for u in tweet['entities']['user_mentions']:
+                    if u['screen_name']==name: continue
                     try: mentions[u['screen_name']] +=1
                     except: mentions[u['screen_name']] =1
             else:
