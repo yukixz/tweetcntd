@@ -90,7 +90,6 @@ class Post():
                     rt +=1
                 
                 for u in tweet['entities']['user_mentions']:
-                    if u['screen_name']==name: continue
                     try: mentions[u['screen_name']] +=1
                     except: mentions[u['screen_name']] =1
             else:
@@ -102,8 +101,10 @@ class Post():
                 most_list = [k]
             elif v==most_count:
                 most_list.append(k)
+        try: most_list.remove(name)
+        except: pass
         
-        return { 'sum':sum, 're':re, 'rt':rt, 'rto':rto, 'most_mention':most_list }
+        return { 'sum':sum, 're':re, 'rt':rt, 'rto':rto, 'most_mentions':most_list }
     
     def format_time(self, ss):
         return ''.join(( ss[26:30], self.MONTH2NUMBER[ss[4:7]],ss[8:10],ss[11:13],ss[14:16],ss[17:19] ))
