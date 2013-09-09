@@ -1,9 +1,14 @@
 <uwsgi>
   <master/>
-  <module>tweetcntd.wsgi</module>
+  <workers>2</workers>
   <plugins>python3</plugins>
+  <module>tweetcntd.wsgi</module>
+  <socket>/tmp/tweetcntd.socket</socket>
   
-  <socket>127.0.0.1:9000</socket>
-  <chdir>/path/to/tweetcntd</chdir>
-  <touch-reload>/path/to/tweetcntd/uwsgi.reload</touch-reload>
+  <!-- SETTING
+  * Replace {tweetcntd} to /path/to/tweetcntd.
+  -->
+  <chdir>{tweetcntd}</chdir>
+  <pythonpath>{tweetcntd}/tweetcntd/packages/</pythonpath>
+  <touch-reload>{tweetcntd}/uwsgi.xml</touch-reload>
 </uwsgi>
