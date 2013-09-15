@@ -9,6 +9,5 @@
   * Replace {tweetcntd} to /path/to/tweetcntd.
   -->
   <chdir>{tweetcntd}</chdir>
-  <pythonpath>{tweetcntd}/tweetcntd/packages/</pythonpath>
   <touch-reload>{tweetcntd}/uwsgi.xml</touch-reload>
 </uwsgi>
