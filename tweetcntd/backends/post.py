@@ -102,9 +102,10 @@ class Post():
             elif v==most_count:
                 most_list.append(k)
         
-        try: most_list.remove(name)
+        try:
+            most_list.remove(name)
         except: pass
-        if most_count < config.TWEET_MIN/2:
+        if most_count / (len(most_list)+1) < config.TWEET_MIN / 2:
             most_list = []
         
         return {'sum':sum,
