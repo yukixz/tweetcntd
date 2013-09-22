@@ -38,7 +38,8 @@ class Database():
     
     def create_table(self):
         SQL_CREATE_TABLE = '''CREATE TABLE %s \
-            (id BIGINT Unsigned NOT NULL, token CHAR(64) NOT NULL, secret CHAR(50) NOT NULL, \
+            (id BIGINT Unsigned NOT NULL, \
+            token CHAR(64) NOT NULL, secret CHAR(50) NOT NULL, \
                 name CHAR(15), enabled BIT default 1, \ 
             PRIMARY KEY (id) )''' % \
             (self.TABLE)
@@ -86,6 +87,13 @@ class Database():
         SQL_UPDATE_NAME = '''UPDATE %s SET name="%s" WHERE id=%d''' % \
             (self.TABLE, name, id)
         self._execute(SQL_UPDATE_NAME)
+    
+    def update_user(self, id, name, token, secret):
+        SQL_UPDATE_USER = '''UPDATE %s \
+            SET name="%s", token="%s", secret="%s" \
+            WHERE id=%d''' % \
+            (self.TABLE, name, token, secret, id)
+        self._execute(SQL_UPDATE_USER)
     
 
 class DatabaseUser():

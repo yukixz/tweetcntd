@@ -46,7 +46,8 @@ def verify(request):
         
         else:
             try:
-                database.enable_user(user_id)
+                database.update_user(user_id, screen_name, \
+                    access_token, access_secret)
             except DatabaseError as e:
                 log.error("%d %s \n %d %d %s" % (e.code, e.message,  e.errno, e.sqlstate, e.sqlmsg))
                 return templates.internal_server_error()
